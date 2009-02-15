@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<dataset>
+	<location num="jruby:BigDecimal((PI(100)/2).to_s)" addr="jruby:'Webster Street'" date="jruby:DateTime::now() - 14"/>
+</dataset>

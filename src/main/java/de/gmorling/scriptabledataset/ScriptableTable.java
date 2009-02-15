@@ -43,9 +43,11 @@ public class ScriptableTable implements ITable {
 			if (engine != null) {
 				engines.put(oneConfig.getPrefix(), engine);
 				handlers.put(oneConfig.getPrefix(), oneConfig);
+
+				logger.info("Registered scripting engine {} for language {}.", engine, oneConfig.getLanguageName());
 			}
 			else {
-				logger.warn("No scripting engine found for name \"{}\"", engineName);
+				throw new RuntimeException("No scripting engine found for language \"" + engineName + "\".");
 			}
 		}
 	}
@@ -78,11 +80,8 @@ public class ScriptableTable implements ITable {
 
 					try {
 
-						// standard handlers for the language
-						List<Class<? extends ScriptInvocationHandler>> handlerClasses = StandardHandlerConfig
-								.getHandlerClassesByLanguage(oneEntry.getValue().getLanguageName());
-
-						handlerClasses.addAll(oneEntry.getValue().getHandlerClasses());
+						List<Class<? extends ScriptInvocationHandler>> handlerClasses = getHandlerClasses(oneEntry
+								.getValue());
 
 						List<ScriptInvocationHandler> handlers = new ArrayList<ScriptInvocationHandler>(handlerClasses
 								.size());
@@ -96,6 +95,8 @@ public class ScriptableTable implements ITable {
 							script = handler.preInvoke(script);
 						}
 
+						logger.debug("Executing script: {}", script);
+
 						Object theValue = engine.eval(script);
 
 						Collections.reverse(handlers);
@@ -107,6 +108,7 @@ public class ScriptableTable implements ITable {
 
 					}
 					catch (Exception e) {
+						e.printStackTrace();
 						throw new RuntimeException(e);
 					}
 				}
@@ -115,6 +117,18 @@ public class ScriptableTable implements ITable {
 		}
 
 		return value;
+	}
+
+	private List<Class<? extends ScriptInvocationHandler>> getHandlerClasses(ScriptableDataSetConfig config) {
+
+		// standard handlers for the language
+		List<Class<? extends ScriptInvocationHandler>> handlerClasses = StandardHandlerConfig
+				.getHandlerClassesByLanguage(config.getLanguageName());
+
+		// custom handlers
+		handlerClasses.addAll(config.getHandlerClasses());
+
+		return handlerClasses;
 	}
 
 }
