@@ -7,8 +7,9 @@ import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITableIterator;
 
 /**
- * An implementation of an DBUnit <code>IDataSet</code>, that allows the use of
- * script expressions in its fields, as in the following example:
+ * An implementation of a <a href="http://www.dbunit.org/">DBUnit</a>
+ * <code>IDataSet</code>, that allows the use of script expressions in its
+ * fields, as in the following example:
  * 
  * <pre>
  * &lt;dataset&gt;
@@ -16,11 +17,10 @@ import org.dbunit.dataset.ITableIterator;
  * &lt;/dataset&gt;
  * </pre>
  * 
- * In order to use a certain scripting language, an JSR 223 compatible engine
- * has to exist for that language.
+ * In order to use a certain scripting language, a JSR 223 compatible engine has
+ * to exist for that language.
  * 
  * @author Gunnar Morling
- * 
  */
 public class ScriptableDataSet extends AbstractDataSet {
 
@@ -28,6 +28,15 @@ public class ScriptableDataSet extends AbstractDataSet {
 
 	private ScriptableDataSetConfig[] configurations;
 
+	/**
+	 * Creates a new ScriptableDataSet.
+	 * 
+	 * @param wrapped
+	 *            Another data set to be wrapped by this scriptable data set.
+	 *            Must not be null.
+	 * @param configurations
+	 *            At least one scriptable data set configuration.
+	 */
 	public ScriptableDataSet(IDataSet wrapped, ScriptableDataSetConfig... configurations) {
 
 		Validate.notNull(wrapped);

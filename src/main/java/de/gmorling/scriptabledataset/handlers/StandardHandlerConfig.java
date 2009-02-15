@@ -6,6 +6,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Manages handlers, that shall always executed for scripts in a given language.
+ * These standard handlers will be called <b>before<b> any custom handlers in
+ * the pre invocation and <b>after<b> any custom handlers in the post
+ * invocation.
+ * 
+ * @author Gunnar Morling
+ */
 public class StandardHandlerConfig {
 
 	private static Map<String, List<Class<? extends ScriptInvocationHandler>>> standardHandlers;

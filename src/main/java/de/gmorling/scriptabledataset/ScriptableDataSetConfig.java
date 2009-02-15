@@ -8,6 +8,12 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 
 import de.gmorling.scriptabledataset.handlers.ScriptInvocationHandler;
 
+/**
+ * Configures the usage of one scripting language with a prefix and a list of
+ * invocation handlers.
+ * 
+ * @author Gunnar Morling
+ */
 public class ScriptableDataSetConfig {
 
 	private final String prefix;
