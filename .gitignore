@@ -1,0 +1,6 @@
+target
+derbyTest
+derby.log
+.settings
+.classpath
+.project
