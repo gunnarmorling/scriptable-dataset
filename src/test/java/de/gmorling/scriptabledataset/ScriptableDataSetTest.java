@@ -72,8 +72,8 @@ public class ScriptableDataSetTest {
 		if (!rs.next())
 			fail("Data set should have a row.");
 
-		assertEquals(12, rs.getObject(1));
-		assertEquals("Webster Street", rs.getObject(2));
+		assertEquals(6, rs.getObject(1));
+		assertEquals("teertS retsbeW", rs.getObject(2));
 		assertEquals(DateUtils.truncate(calendar.getTime(), Calendar.DATE), rs.getObject(3));
 
 		rs.close();
