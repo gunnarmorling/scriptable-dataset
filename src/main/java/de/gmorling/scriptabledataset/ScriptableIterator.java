@@ -1,5 +1,7 @@
 package de.gmorling.scriptabledataset;
 
+import java.util.List;
+
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.ITableIterator;
@@ -9,9 +11,9 @@ public class ScriptableIterator implements ITableIterator {
 
 	private ITableIterator wrapped;
 
-	private ScriptableDataSetConfig[] configurations;
+	private List<ScriptableDataSetConfig> configurations;
 
-	public ScriptableIterator(ITableIterator wrapped, ScriptableDataSetConfig[] configurations) {
+	public ScriptableIterator(ITableIterator wrapped, List<ScriptableDataSetConfig> configurations) {
 
 		this.wrapped = wrapped;
 		this.configurations = configurations;

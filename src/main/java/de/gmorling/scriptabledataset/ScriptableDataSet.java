@@ -1,5 +1,8 @@
 package de.gmorling.scriptabledataset;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.commons.lang.Validate;
 import org.dbunit.dataset.AbstractDataSet;
 import org.dbunit.dataset.DataSetException;
@@ -51,7 +54,7 @@ public class ScriptableDataSet extends AbstractDataSet {
 
 	private IDataSet wrapped;
 
-	private ScriptableDataSetConfig[] configurations;
+	private List<ScriptableDataSetConfig> configurations;
 
 	/**
 	 * Creates a new ScriptableDataSet.
@@ -65,11 +68,13 @@ public class ScriptableDataSet extends AbstractDataSet {
 	public ScriptableDataSet(IDataSet wrapped, ScriptableDataSetConfig... configurations) {
 
 		Validate.notNull(wrapped);
+
 		Validate.notNull(configurations);
 		Validate.noNullElements(configurations);
+		Validate.notEmpty(configurations);
 
 		this.wrapped = wrapped;
-		this.configurations = configurations;
+		this.configurations = Arrays.asList(configurations);
 	}
 
 	@Override
