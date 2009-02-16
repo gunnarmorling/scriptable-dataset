@@ -56,6 +56,12 @@ public class ScriptableDataSetTest {
 		dbUnitConnection.close();
 	}
 
+	/**
+	 * Test for using JRuby as scripting language.
+	 * 
+	 * @throws Exception
+	 *             In case of any error.
+	 */
 	@Test
 	public void jRubyScript() throws Exception {
 
@@ -79,6 +85,13 @@ public class ScriptableDataSetTest {
 		rs.close();
 	}
 
+	/**
+	 * Test for using JRuby as scripting language in conjunction with a special
+	 * invocation handler.
+	 * 
+	 * @throws Exception
+	 *             In case of any error.
+	 */
 	@Test
 	public void customHandler() throws Exception {
 
@@ -97,13 +110,22 @@ public class ScriptableDataSetTest {
 		if (!rs.next())
 			fail("Data set should have a row.");
 
+		// enabled by import from custom handler
 		assertEquals(1, rs.getObject(1));
 		assertEquals("Webster Street", rs.getObject(2));
+
+		// enabled by import from JRuby standard handler
 		assertEquals(DateUtils.truncate(calendar.getTime(), Calendar.DATE), rs.getObject(3));
 
 		rs.close();
 	}
 
+	/**
+	 * Test for usage of an unknown scripting engine.
+	 * 
+	 * @throws Exception
+	 *             In case of any error.
+	 */
 	@Test(expected = RuntimeException.class)
 	public void unknownScriptingEngine() throws Exception {
 
@@ -112,6 +134,5 @@ public class ScriptableDataSetTest {
 				null));
 
 		DatabaseOperation.INSERT.execute(dbUnitConnection, dataSet);
-
 	}
 }
