@@ -10,20 +10,20 @@
 	<style type="text/css">
 		body {
   		margin-top: 1.0em;
-  		background-color: #2a1887;
+  		background-color: #efefef;
 		  font-family: "helvetica"; 
-  		color: #ffffff;
+  		color: #0a0a0a;
     }
     #container {
       margin: 0 auto;
       width: 700px;
     }
-		h1 { font-size: 3.8em; color: #d5e778; margin-bottom: 3px; }
+		h1 { font-size: 3.8em; color: #0a0a0a; margin-bottom: 3px; }
 		h1 .small { font-size: 0.4em; }
 		h1 a { text-decoration: none }
-		h2 { font-size: 1.5em; color: #d5e778; }
-    h3 { text-align: center; color: #d5e778; }
-    a { color: #d5e778; }
+		h2 { font-size: 1.5em; color: #0a0a0a; }
+    h3 { text-align: center; color: #0a0a0a; }
+    a { color: #0a0a0a; }
     .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
     .download { float: right; }
 		pre { background: #000; color: #fff; padding: 15px;}
@@ -49,21 +49,23 @@
       <span class="small">by <a href="http://github.com/gunnarmorling">gunnarmorling</a></small></h1>
 
     <div class="description">
-      A scriptable dataset for DBUnit (http://www.dbunit.org/)
+      A scriptable dataset for <a href="http://www.dbunit.org/">DBUnit</a>
     </div>
 
-    <p>An implementation of a DBUnit IDataSet, that allows to use JSR 223 compatible scripting language expressions in its fields. Using the ScriptableDataSet class, files with dynamic content as the following can be loaded and processed:
+    <p>An implementation of a DBUnit IDataSet, that allows to use JSR 223 compatible scripting language expressions in its fields. Using the ScriptableDataSet class, data set files with dynamic content as the following one can be loaded and processed:
 
-<?xml version="1.0" encoding="UTF-8"?>
-<dataset>
-    <location num="jruby:12/2" addr="jruby:'Webster Street'.reverse" date="jruby:DateTime::now() - 14"/>
-</dataset>
+<pre>
+&lt;dataset&gt;
+&lt;location num=&quot;jruby:12/2&quot; addr=&quot;jruby:'Webster Street'.reverse&quot; date=&quot;jruby:DateTime::now() - 14&quot;/&gt;
+&lt;/dataset&gt;
+</pre>
+
 </p><h2>License</h2>
 <p>New BSD license</p>
 <h2>Authors</h2>
 <p>Gunnar Morling (gunnar.morling@gmail.com)<br/><br/>      </p>
 <h2>Contact</h2>
-<p> (gunnar.morling@gmail.com)<br/>      </p>
+<p> gunnar.morling@gmail.com<br/>      </p>
 
 
     <h2>Download</h2>
