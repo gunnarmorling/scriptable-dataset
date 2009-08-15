@@ -14,10 +14,13 @@ import org.dbunit.dataset.ITableIterator;
  * An implementation of a <a href="http://www.dbunit.org/">DBUnit</a>
  * <code>IDataSet</code>, that allows the use of script expressions in its
  * fields. In order to use a certain scripting language in a scriptable data
- * set, a JSR 223 compatible script engine has to exist for that language.
+ * set, a <a href="http://jcp.org/en/jsr/detail?id=223">JSR 223</a>
+ * (&quot;Scripting for the Java<sup>TM</sup> Platform&quot;) compatible script
+ * engine has to exist for that language.
  * </p>
  * <p>
- * Using the JRuby engine e.g., a scriptable data set file could look like this:
+ * Using the <a href="http://jruby.org/">JRuby</a> engine e.g., a scriptable
+ * data set file could look like this:
  * </p>
  * 
  * <pre>
@@ -31,7 +34,9 @@ import org.dbunit.dataset.ITableIterator;
  * <pre>
  * IDataSet wrapped = ...;
  * 
- * List&lt;Class&lt;? extends ScriptInvocationHandler&gt;&gt; handlers = new ArrayList&lt;Class&lt;? extends ScriptInvocationHandler&gt;&gt;();
+ * List&lt;ScriptInvocationHandler&gt; handlers = new ArrayList&lt;Class&lt;? extends ScriptInvocationHandler&gt;&gt;();
+ * handlers.add(new JRubyImportAddingInvocationHandler());
+ * 
  * IDataSet scriptableDS = new ScriptableDataSet(
  * 		wrapped, new ScriptableDataSetConfig(&quot;jruby&quot;, &quot;jruby:&quot;, handlers));
  * </pre>
@@ -39,11 +44,11 @@ import org.dbunit.dataset.ITableIterator;
  * where
  * <ul>
  * <li><b>jruby</b> is the name of a scripting language as understood by
- * <code>javax.script.ScriptEngineManager</code></li>
+ * {@link javax.script.ScriptEngineManager}</li>
  * <li><b>jruby:</b> is a prefix, that shall precede fields in that scripting
  * language</li>
  * <li><b>handlers</b> is an optional list of
- * <code>ScriptInvocationHandler</code>s, that can be used to pre-process
+ * {@link ScriptInvocationHandler}s, that can be used to pre-process
  * scripts (e.g. to add common imports) and post-process scripts (e.g. to
  * convert results into data types understood by DBUnit).</li>
  * </ul>

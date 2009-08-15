@@ -81,8 +81,9 @@ public class ScriptableDataSetTest {
 	@Test
 	public void jRubyScript() throws Exception {
 
-		IDataSet dataSet = new ScriptableDataSet(new FlatXmlDataSet(ScriptableDataSetTest.class
-				.getResourceAsStream("jruby.xml")), new ScriptableDataSetConfig("jruby", "jruby:"));
+		IDataSet dataSet = new ScriptableDataSet(
+			new FlatXmlDataSet(ScriptableDataSetTest.class.getResourceAsStream("jruby.xml")),
+			new ScriptableDataSetConfig("jruby", "jruby:"));
 		
 		insertDataSetAndCreateResultSet(dataSet);
 		
@@ -98,19 +99,28 @@ public class ScriptableDataSetTest {
 	@Test
 	public void groovyScript() throws Exception {
 
-		IDataSet dataSet = new ScriptableDataSet(new FlatXmlDataSet(ScriptableDataSetTest.class
-				.getResourceAsStream("groovy.xml")), new ScriptableDataSetConfig("groovy", "groovy:"));
+		IDataSet dataSet = new ScriptableDataSet(
+			new FlatXmlDataSet(ScriptableDataSetTest.class.getResourceAsStream("groovy.xml")), 
+			new ScriptableDataSetConfig("groovy", "groovy:"));
 		
 		insertDataSetAndCreateResultSet(dataSet);
 		
 		assertNextRow(resultSet, 6, "teertS retsbeW", addDaysToToday(-14));
 	}
 	
+	/**
+	 * Test for using JRuby and Groovy within one data set file.
+	 * 
+	 * @throws Exception
+	 *             In case of any error.
+	 */
 	@Test
 	public void dataSetWithMultipleLanguages() throws Exception {
 		
-		IDataSet dataSet = new ScriptableDataSet(new FlatXmlDataSet(ScriptableDataSetTest.class
-				.getResourceAsStream("multiple_languages.xml")), new ScriptableDataSetConfig("jruby", "jruby:"), new  ScriptableDataSetConfig("groovy", "groovy:"));
+		IDataSet dataSet = new ScriptableDataSet(
+			new FlatXmlDataSet(ScriptableDataSetTest.class.getResourceAsStream("multiple_languages.xml")),
+			new ScriptableDataSetConfig("jruby", "jruby:"),
+			new ScriptableDataSetConfig("groovy", "groovy:"));
 
 		insertDataSetAndCreateResultSet(dataSet);
 
@@ -129,9 +139,11 @@ public class ScriptableDataSetTest {
 	public void customHandler() throws Exception {
 
 		List<ScriptInvocationHandler> handlers = new ArrayList<ScriptInvocationHandler>();
-		handlers.add(new JrubyImportAddingInvocationHandler());
-		IDataSet dataSet = new ScriptableDataSet(new FlatXmlDataSet(ScriptableDataSetTest.class
-				.getResourceAsStream("customhandler.xml")), new ScriptableDataSetConfig("jruby", "jruby:", handlers));
+		handlers.add(new JRubyImportAddingInvocationHandler());
+		
+		IDataSet dataSet = new ScriptableDataSet(
+			new FlatXmlDataSet(ScriptableDataSetTest.class.getResourceAsStream("customhandler.xml")),
+			new ScriptableDataSetConfig("jruby", "jruby:", handlers));
 
 		insertDataSetAndCreateResultSet(dataSet);
 
@@ -147,8 +159,9 @@ public class ScriptableDataSetTest {
 	@Test(expected = RuntimeException.class)
 	public void unknownScriptingEngine() throws Exception {
 
-		IDataSet dataSet = new ScriptableDataSet(new FlatXmlDataSet(ScriptableDataSetTest.class
-				.getResourceAsStream("unknownscriptingengine.xml")), new ScriptableDataSetConfig("unknown", "unknown:"));
+		IDataSet dataSet = new ScriptableDataSet(
+			new FlatXmlDataSet(ScriptableDataSetTest.class.getResourceAsStream("unknownscriptingengine.xml")),
+			new ScriptableDataSetConfig("unknown", "unknown:"));
 
 		DatabaseOperation.INSERT.execute(dbUnitConnection, dataSet);
 	}

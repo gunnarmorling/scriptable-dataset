@@ -4,7 +4,7 @@ import javax.script.ScriptEngine;
 
 import de.gmorling.scriptabledataset.handlers.ScriptInvocationHandler;
 
-public class JrubyImportAddingInvocationHandler implements ScriptInvocationHandler {
+public class JRubyImportAddingInvocationHandler implements ScriptInvocationHandler {
 
 	public String getLanguageName() {
 		return "jruby";
