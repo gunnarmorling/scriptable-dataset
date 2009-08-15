@@ -1,6 +1,7 @@
 package de.gmorling.scriptabledataset;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -119,6 +120,38 @@ public class ScriptableDataSetTest {
 
 		rs.close();
 	}
+	
+	
+	/**
+	 * Test for using Groovy as scripting language.
+	 * 
+	 * @throws Exception
+	 *             In case of any error.
+	 */
+	@Test
+	public void groovyScript() throws Exception {
+
+		IDataSet dataSet = new ScriptableDataSet(new FlatXmlDataSet(ScriptableDataSetTest.class
+				.getResourceAsStream("groovy.xml")), new ScriptableDataSetConfig("groovy", "groovy:", null));
+
+		DatabaseOperation.INSERT.execute(dbUnitConnection, dataSet);
+
+		ResultSet rs = connection.createStatement().executeQuery("SELECT num, addr, date FROM location ORDER BY num");
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.DATE, -4);
+
+		if (!rs.next())
+			fail("Data set should have a row.");
+
+		assertEquals(6, rs.getObject(1));
+		assertEquals("teertS retsbeW", rs.getObject(2));
+		assertEquals(DateUtils.truncate(calendar.getTime(), Calendar.DATE), 
+				DateUtils.truncate(rs.getObject(3), Calendar.DATE));
+
+		rs.close();
+	}
+	
 
 	/**
 	 * Test for usage of an unknown scripting engine.
