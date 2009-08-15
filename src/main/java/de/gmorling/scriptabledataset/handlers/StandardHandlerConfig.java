@@ -3,8 +3,10 @@ package de.gmorling.scriptabledataset.handlers;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 
 /**
  * Manages handlers, that shall always executed for scripts in a given language.
@@ -16,25 +18,34 @@ import java.util.Map;
  */
 public class StandardHandlerConfig {
 
-	private static Map<String, List<Class<? extends ScriptInvocationHandler>>> standardHandlers;
+	private static Map<String, List<ScriptInvocationHandler>> standardHandlers;
 
 	static {
 
-		standardHandlers = new HashMap<String, List<Class<? extends ScriptInvocationHandler>>>();
+		standardHandlers = new HashMap<String, List<ScriptInvocationHandler>>();
 
-		List<Class<? extends ScriptInvocationHandler>> jRubyStandardHandlers = new ArrayList<Class<? extends ScriptInvocationHandler>>();
-		jRubyStandardHandlers.add(JRubyScriptInvocationHandler.class);
-
-		standardHandlers.put("jruby", jRubyStandardHandlers);
+		ServiceLoader<ScriptInvocationHandler> serviceLoader = ServiceLoader.load(ScriptInvocationHandler.class);
+		Iterator<ScriptInvocationHandler> iterator = serviceLoader.iterator();
+		
+		while (iterator.hasNext()) {
+			
+			ScriptInvocationHandler scriptInvocationHandler = iterator.next();
+			
+			List<ScriptInvocationHandler> handlersForLanguage = standardHandlers.get(scriptInvocationHandler.getLanguageName());
+			
+			if(handlersForLanguage == null) {
+				handlersForLanguage = new ArrayList<ScriptInvocationHandler>();
+				standardHandlers.put(scriptInvocationHandler.getLanguageName(), handlersForLanguage);
+			}
+			
+			handlersForLanguage.add(scriptInvocationHandler);
+		}
 	}
 
-	public static List<Class<? extends ScriptInvocationHandler>> getHandlerClassesByLanguage(String language) {
-
+	public static List<ScriptInvocationHandler> getStandardHandlersByLanguage(String language) {
+		
 		if (standardHandlers.containsKey(language)) {
-			List<Class<? extends ScriptInvocationHandler>> theValue = new ArrayList<Class<? extends ScriptInvocationHandler>>();
-			theValue.addAll(standardHandlers.get(language));
-
-			return theValue;
+			return new ArrayList<ScriptInvocationHandler>(standardHandlers.get(language));
 		}
 		else {
 			return Collections.emptyList();

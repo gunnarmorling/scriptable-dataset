@@ -6,6 +6,10 @@ import de.gmorling.scriptabledataset.handlers.ScriptInvocationHandler;
 
 public class JrubyImportAddingInvocationHandler implements ScriptInvocationHandler {
 
+	public String getLanguageName() {
+		return "jruby";
+	}
+	
 	public String preInvoke(String script) {
 
 		return "require 'bigdecimal'; require 'bigdecimal/math'; include BigMath; " + script;

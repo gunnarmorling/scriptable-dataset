@@ -20,7 +20,7 @@ public class ScriptableDataSetConfig {
 
 	private final String languageName;
 
-	private final List<Class<? extends ScriptInvocationHandler>> handlerClasses = new ArrayList<Class<? extends ScriptInvocationHandler>>();
+	private final List<ScriptInvocationHandler> handlers = new ArrayList<ScriptInvocationHandler>();
 
 	/**
 	 * Creates a new ScriptableDataSetConfig.
@@ -46,12 +46,12 @@ public class ScriptableDataSetConfig {
 	 * @param prefix
 	 *            A prefix, which shall precede fields in a ScriptableDataSet in
 	 *            that language, e.g. "jruby:". May not be null.
-	 * @param handlerClasses
-	 *            An optional list with handler classes to be applied for fields
-	 *            with the given prefix.
+	 * @param handlers
+	 *            An optional list with handlers to be applied for fields with
+	 *            the given prefix.
 	 */
 	public ScriptableDataSetConfig(String languageName, String prefix,
-			List<Class<? extends ScriptInvocationHandler>> handlerClasses) {
+			List<ScriptInvocationHandler> handlers) {
 
 		super();
 
@@ -61,8 +61,8 @@ public class ScriptableDataSetConfig {
 		this.prefix = prefix;
 		this.languageName = languageName;
 
-		if (handlerClasses != null) {
-			this.handlerClasses.addAll(handlerClasses);
+		if (handlers != null) {
+			this.handlers.addAll(handlers);
 		}
 	}
 
@@ -76,9 +76,9 @@ public class ScriptableDataSetConfig {
 		return languageName;
 	}
 
-	public List<Class<? extends ScriptInvocationHandler>> getHandlerClasses() {
+	public List<ScriptInvocationHandler> getHandlers() {
 
-		return handlerClasses;
+		return handlers;
 	}
 
 	@Override

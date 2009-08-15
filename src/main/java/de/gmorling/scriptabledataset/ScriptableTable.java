@@ -32,9 +32,9 @@ public class ScriptableTable implements ITable {
 
 	private ITable wrapped;
 
-	private Map<String, ScriptEngine> engines = new HashMap<String, ScriptEngine>();
+	private Map<String, ScriptEngine> enginesByPrefix = new HashMap<String, ScriptEngine>();
 
-	private Map<String, ScriptableDataSetConfig> handlers = new HashMap<String, ScriptableDataSetConfig>();
+	private Map<String, List<ScriptInvocationHandler>> handlersByPrefix = new HashMap<String, List<ScriptInvocationHandler>>();
 
 	/**
 	 * Creates a new ScriptableTable.
@@ -54,17 +54,23 @@ public class ScriptableTable implements ITable {
 		// load the engines
 		for (ScriptableDataSetConfig oneConfig : configurations) {
 
-			String engineName = oneConfig.getLanguageName();
-			ScriptEngine engine = manager.getEngineByName(engineName);
+			ScriptEngine engine = manager.getEngineByName(oneConfig.getLanguageName());
 
 			if (engine != null) {
-				engines.put(oneConfig.getPrefix(), engine);
-				handlers.put(oneConfig.getPrefix(), oneConfig);
+				enginesByPrefix.put(oneConfig.getPrefix(), engine);
+				
+				List<ScriptInvocationHandler> handlers = getAllHandlers(oneConfig);
 
+				for (ScriptInvocationHandler oneHandler : handlers) {
+					oneHandler.setScriptEngine(engine);
+				}
+				
+				handlersByPrefix.put(oneConfig.getPrefix(), handlers);
+				
 				logger.info("Registered scripting engine {} for language {}.", engine, oneConfig.getLanguageName());
 			}
 			else {
-				throw new RuntimeException("No scripting engine found for language \"" + engineName + "\".");
+				throw new RuntimeException("No scripting engine found for language \"" + oneConfig.getLanguageName() + "\".");
 			}
 		}
 	}
@@ -96,30 +102,22 @@ public class ScriptableTable implements ITable {
 		if (theValue instanceof String) {
 			String script = (String) theValue;
 
-			for (Entry<String, ScriptableDataSetConfig> oneEntry : handlers.entrySet()) {
+			for (Entry<String, ScriptEngine> oneEntry : enginesByPrefix.entrySet()) {
 
 				String prefix = oneEntry.getKey();
 
 				// found engine for prefix
 				if (script.startsWith(prefix)) {
 
-					ScriptEngine engine = engines.get(oneEntry.getKey());
+					ScriptEngine engine = oneEntry.getValue();
 					script = script.substring(prefix.length());
 
-					List<Class<? extends ScriptInvocationHandler>> handlerClasses = getHandlerClasses(oneEntry
-							.getValue());
+					List<ScriptInvocationHandler> handlers = handlersByPrefix.get(oneEntry.getKey());
 
-					List<ScriptInvocationHandler> handlers = new ArrayList<ScriptInvocationHandler>(handlerClasses
-							.size());
 					try {
 
-						// instantiate the handlers and call preInvoke
-						for (Class<? extends ScriptInvocationHandler> handlerClass : handlerClasses) {
-
-							ScriptInvocationHandler handler = handlerClass.newInstance();
-							handler.setScriptEngine(engine);
-							handlers.add(handler);
-
+						//preInvoke
+						for (ScriptInvocationHandler handler : handlers) {
 							script = handler.preInvoke(script);
 						}
 
@@ -136,12 +134,10 @@ public class ScriptableTable implements ITable {
 
 					}
 					catch (Exception e) {
-						e.printStackTrace();
 						throw new RuntimeException(e);
 					}
 				}
 			}
-
 		}
 
 		return theValue;
@@ -155,15 +151,15 @@ public class ScriptableTable implements ITable {
 	 *            A config object.
 	 * @return A list with handlers. Never null.
 	 */
-	private List<Class<? extends ScriptInvocationHandler>> getHandlerClasses(ScriptableDataSetConfig config) {
+	private List<ScriptInvocationHandler> getAllHandlers(ScriptableDataSetConfig config) {
 
-		List<Class<? extends ScriptInvocationHandler>> theValue = new ArrayList<Class<? extends ScriptInvocationHandler>>();
+		List<ScriptInvocationHandler> theValue = new ArrayList<ScriptInvocationHandler>();
 
 		// standard handlers for the language
-		theValue.addAll(StandardHandlerConfig.getHandlerClassesByLanguage(config.getLanguageName()));
+		theValue.addAll(StandardHandlerConfig.getStandardHandlersByLanguage(config.getLanguageName()));
 
 		// custom handlers
-		theValue.addAll(config.getHandlerClasses());
+		theValue.addAll(config.getHandlers());
 
 		return theValue;
 	}

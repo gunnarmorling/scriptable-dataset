@@ -17,6 +17,10 @@ public class JRubyScriptInvocationHandler implements ScriptInvocationHandler {
 
 	private ScriptEngine engine;
 
+	public String getLanguageName() {
+		return "jruby";
+	}
+	
 	public String preInvoke(String script) {
 
 		return "require 'date';" + script;
