@@ -8,8 +8,8 @@ import java.util.Map;
 
 /**
  * Manages handlers, that shall always executed for scripts in a given language.
- * These standard handlers will be called <b>before<b> any custom handlers in
- * the pre invocation and <b>after<b> any custom handlers in the post
+ * These standard handlers will be called <b>before</b> any custom handlers in
+ * the pre invocation and <b>after</b> any custom handlers in the post
  * invocation.
  * 
  * @author Gunnar Morling

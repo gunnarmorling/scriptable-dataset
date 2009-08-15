@@ -31,6 +31,21 @@ public class ScriptableDataSetConfig {
 	 * @param prefix
 	 *            A prefix, which shall precede fields in a ScriptableDataSet in
 	 *            that language, e.g. "jruby:". May not be null.
+	 */
+	public ScriptableDataSetConfig(String languageName, String prefix) {
+
+		this(languageName, prefix, null);
+	}
+	
+	/**
+	 * Creates a new ScriptableDataSetConfig.
+	 * 
+	 * @param languageName
+	 *            The name of the language as expected by the JSR 223 scripting
+	 *            engine manager, e.g. "jruby". May not be null.
+	 * @param prefix
+	 *            A prefix, which shall precede fields in a ScriptableDataSet in
+	 *            that language, e.g. "jruby:". May not be null.
 	 * @param handlerClasses
 	 *            An optional list with handler classes to be applied for fields
 	 *            with the given prefix.

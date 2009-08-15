@@ -66,7 +66,7 @@ public class ScriptableDataSetTest {
 	public void jRubyScript() throws Exception {
 
 		IDataSet dataSet = new ScriptableDataSet(new FlatXmlDataSet(ScriptableDataSetTest.class
-				.getResourceAsStream("jruby.xml")), new ScriptableDataSetConfig("jruby", "jruby:", null));
+				.getResourceAsStream("jruby.xml")), new ScriptableDataSetConfig("jruby", "jruby:"));
 
 		DatabaseOperation.INSERT.execute(dbUnitConnection, dataSet);
 
@@ -130,8 +130,7 @@ public class ScriptableDataSetTest {
 	public void unknownScriptingEngine() throws Exception {
 
 		IDataSet dataSet = new ScriptableDataSet(new FlatXmlDataSet(ScriptableDataSetTest.class
-				.getResourceAsStream("unknownscriptingengine.xml")), new ScriptableDataSetConfig("unknown", "unknown:",
-				null));
+				.getResourceAsStream("unknownscriptingengine.xml")), new ScriptableDataSetConfig("unknown", "unknown:"));
 
 		DatabaseOperation.INSERT.execute(dbUnitConnection, dataSet);
 	}
