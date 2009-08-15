@@ -6,20 +6,23 @@ import static org.junit.Assert.fail;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.lang.time.DateUtils;
+import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.gmorling.scriptabledataset.handlers.ScriptInvocationHandler;
@@ -32,28 +35,40 @@ import de.gmorling.scriptabledataset.handlers.ScriptInvocationHandler;
  */
 public class ScriptableDataSetTest {
 
-	private Connection connection;
+	private static Connection connection;
 
-	private IDatabaseConnection dbUnitConnection;
+	private static IDatabaseConnection dbUnitConnection;
 
-	@Before
-	public void setUp() throws Exception {
+	private ResultSet resultSet;
 
-		Logger logger = Logger.getLogger("de.gmorling.scriptabledataset");
-		logger.setLevel(Level.CONFIG);
-
+	@BeforeClass
+	public static void initializeConnection() throws Exception {
+		
 		connection = DriverManager.getConnection("jdbc:derby:derbyTest;create=true");
 		connection.setAutoCommit(false);
+		
 		dbUnitConnection = new DatabaseConnection(connection);
+	}
+	
+	@Before
+	public void createTable() throws Exception {
 
 		connection.createStatement().execute("create table location(num int, addr varchar(40), date timestamp)");
 	}
 
 	@After
-	public void tearDown() throws Exception {
+	public void rollbackTransaction() throws Exception {
 
+		if(resultSet != null) {
+			resultSet.close();
+		}
+		
 		connection.rollback();
-		connection.close();
+	}
+	
+	@AfterClass
+	public static void closeConnection() throws Exception {
+		
 		dbUnitConnection.close();
 	}
 
@@ -68,22 +83,39 @@ public class ScriptableDataSetTest {
 
 		IDataSet dataSet = new ScriptableDataSet(new FlatXmlDataSet(ScriptableDataSetTest.class
 				.getResourceAsStream("jruby.xml")), new ScriptableDataSetConfig("jruby", "jruby:"));
+		
+		insertDataSetAndCreateResultSet(dataSet);
+		
+		assertNextRow(resultSet, 6, "teertS retsbeW", addDaysToToday(-14));
+	}
+	
+	/**
+	 * Test for using Groovy as scripting language.
+	 * 
+	 * @throws Exception
+	 *             In case of any error.
+	 */
+	@Test
+	public void groovyScript() throws Exception {
 
-		DatabaseOperation.INSERT.execute(dbUnitConnection, dataSet);
+		IDataSet dataSet = new ScriptableDataSet(new FlatXmlDataSet(ScriptableDataSetTest.class
+				.getResourceAsStream("groovy.xml")), new ScriptableDataSetConfig("groovy", "groovy:"));
+		
+		insertDataSetAndCreateResultSet(dataSet);
+		
+		assertNextRow(resultSet, 6, "teertS retsbeW", addDaysToToday(-14));
+	}
+	
+	@Test
+	public void dataSetWithMultipleLanguages() throws Exception {
+		
+		IDataSet dataSet = new ScriptableDataSet(new FlatXmlDataSet(ScriptableDataSetTest.class
+				.getResourceAsStream("multiple_languages.xml")), new ScriptableDataSetConfig("jruby", "jruby:"), new  ScriptableDataSetConfig("groovy", "groovy:"));
 
-		ResultSet rs = connection.createStatement().executeQuery("SELECT num, addr, date FROM location ORDER BY num");
+		insertDataSetAndCreateResultSet(dataSet);
 
-		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.DATE, -14);
-
-		if (!rs.next())
-			fail("Data set should have a row.");
-
-		assertEquals(6, rs.getObject(1));
-		assertEquals("teertS retsbeW", rs.getObject(2));
-		assertEquals(DateUtils.truncate(calendar.getTime(), Calendar.DATE), rs.getObject(3));
-
-		rs.close();
+		assertNextRow(resultSet, 6, "teertS retsbeW", addDaysToToday(-14));
+		assertNextRow(resultSet, 6, "teertS retsbeW", addDaysToToday(-14));
 	}
 
 	/**
@@ -101,57 +133,10 @@ public class ScriptableDataSetTest {
 		IDataSet dataSet = new ScriptableDataSet(new FlatXmlDataSet(ScriptableDataSetTest.class
 				.getResourceAsStream("customhandler.xml")), new ScriptableDataSetConfig("jruby", "jruby:", handlers));
 
-		DatabaseOperation.INSERT.execute(dbUnitConnection, dataSet);
+		insertDataSetAndCreateResultSet(dataSet);
 
-		ResultSet rs = connection.createStatement().executeQuery("SELECT num, addr, date FROM location ORDER BY num");
-
-		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.DATE, -14);
-
-		if (!rs.next())
-			fail("Data set should have a row.");
-
-		// enabled by import from custom handler
-		assertEquals(1, rs.getObject(1));
-		assertEquals("Webster Street", rs.getObject(2));
-
-		// enabled by import from JRuby standard handler
-		assertEquals(DateUtils.truncate(calendar.getTime(), Calendar.DATE), rs.getObject(3));
-
-		rs.close();
+		assertNextRow(resultSet, 1, "Webster Street", addDaysToToday(-14));
 	}
-	
-	
-	/**
-	 * Test for using Groovy as scripting language.
-	 * 
-	 * @throws Exception
-	 *             In case of any error.
-	 */
-	@Test
-	public void groovyScript() throws Exception {
-
-		IDataSet dataSet = new ScriptableDataSet(new FlatXmlDataSet(ScriptableDataSetTest.class
-				.getResourceAsStream("groovy.xml")), new ScriptableDataSetConfig("groovy", "groovy:", null));
-
-		DatabaseOperation.INSERT.execute(dbUnitConnection, dataSet);
-
-		ResultSet rs = connection.createStatement().executeQuery("SELECT num, addr, date FROM location ORDER BY num");
-
-		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.DATE, -4);
-
-		if (!rs.next())
-			fail("Data set should have a row.");
-
-		assertEquals(6, rs.getObject(1));
-		assertEquals("teertS retsbeW", rs.getObject(2));
-		assertEquals(DateUtils.truncate(calendar.getTime(), Calendar.DATE), 
-				DateUtils.truncate(rs.getObject(3), Calendar.DATE));
-
-		rs.close();
-	}
-	
 
 	/**
 	 * Test for usage of an unknown scripting engine.
@@ -166,5 +151,31 @@ public class ScriptableDataSetTest {
 				.getResourceAsStream("unknownscriptingengine.xml")), new ScriptableDataSetConfig("unknown", "unknown:"));
 
 		DatabaseOperation.INSERT.execute(dbUnitConnection, dataSet);
+	}
+	
+	private void insertDataSetAndCreateResultSet(IDataSet dataSet)
+			throws DatabaseUnitException, SQLException {
+		
+		DatabaseOperation.INSERT.execute(dbUnitConnection, dataSet);
+		
+		resultSet = connection.createStatement().executeQuery("SELECT num, addr, date FROM location ORDER BY num");
+	}
+
+	private void assertNextRow(ResultSet rs, int expectedInt, String expectedString, Date expectedDate) throws SQLException {
+
+		if (!rs.next())
+			fail("Data set should have a row.");
+
+		assertEquals(expectedInt, rs.getObject(1));
+		assertEquals(expectedString, rs.getObject(2));
+		assertEquals(DateUtils.truncate(expectedDate, Calendar.DATE), DateUtils.truncate(rs.getObject(3), Calendar.DATE));
+	}
+	
+	private Date addDaysToToday(int numberOfDays) {
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.DATE, numberOfDays);
+
+		return calendar.getTime();
 	}
 }

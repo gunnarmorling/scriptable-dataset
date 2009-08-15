@@ -18,8 +18,6 @@ public class TestInvocationHandler implements ScriptInvocationHandler {
 
 	public void setScriptEngine(ScriptEngine engine) {
 
-		// TODO Auto-generated method stub
-
 	}
 
 }
