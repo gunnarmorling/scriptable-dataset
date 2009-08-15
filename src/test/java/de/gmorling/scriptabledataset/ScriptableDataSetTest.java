@@ -129,7 +129,7 @@ public class ScriptableDataSetTest {
 	public void customHandler() throws Exception {
 
 		List<Class<? extends ScriptInvocationHandler>> handlers = new ArrayList<Class<? extends ScriptInvocationHandler>>();
-		handlers.add(TestInvocationHandler.class);
+		handlers.add(JrubyImportAddingInvocationHandler.class);
 		IDataSet dataSet = new ScriptableDataSet(new FlatXmlDataSet(ScriptableDataSetTest.class
 				.getResourceAsStream("customhandler.xml")), new ScriptableDataSetConfig("jruby", "jruby:", handlers));
 

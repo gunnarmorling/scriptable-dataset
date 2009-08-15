@@ -4,7 +4,7 @@ import javax.script.ScriptEngine;
 
 import de.gmorling.scriptabledataset.handlers.ScriptInvocationHandler;
 
-public class TestInvocationHandler implements ScriptInvocationHandler {
+public class JrubyImportAddingInvocationHandler implements ScriptInvocationHandler {
 
 	public String preInvoke(String script) {
 
