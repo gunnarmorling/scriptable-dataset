@@ -4,7 +4,7 @@
 	<groupId>de.gmorling</groupId>
 	<artifactId>scriptable-dataset</artifactId>
 	<packaging>jar</packaging>
-	<version>0.1</version>
+	<version>0.2-SNAPSHOT</version>
 	<name>scriptable-dataset</name>
 	<dependencies>
 		<dependency>
