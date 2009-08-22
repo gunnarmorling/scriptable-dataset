@@ -6,7 +6,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.gmorling.scriptabledataset.ScriptableTable;
 
 /**
  * Manages handlers, that shall always executed for scripts in a given language.
@@ -27,18 +33,26 @@ public class StandardHandlerConfig {
 		ServiceLoader<ScriptInvocationHandler> serviceLoader = ServiceLoader.load(ScriptInvocationHandler.class);
 		Iterator<ScriptInvocationHandler> iterator = serviceLoader.iterator();
 		
-		while (iterator.hasNext()) {
-			
-			ScriptInvocationHandler scriptInvocationHandler = iterator.next();
-			
-			List<ScriptInvocationHandler> handlersForLanguage = standardHandlers.get(scriptInvocationHandler.getLanguageName());
-			
-			if(handlersForLanguage == null) {
-				handlersForLanguage = new ArrayList<ScriptInvocationHandler>();
-				standardHandlers.put(scriptInvocationHandler.getLanguageName(), handlersForLanguage);
+		try {
+			while (iterator.hasNext()) {
+				
+				ScriptInvocationHandler scriptInvocationHandler = iterator.next();
+				
+				List<ScriptInvocationHandler> handlersForLanguage = standardHandlers.get(scriptInvocationHandler.getLanguageName());
+				
+				if(handlersForLanguage == null) {
+					handlersForLanguage = new ArrayList<ScriptInvocationHandler>();
+					standardHandlers.put(scriptInvocationHandler.getLanguageName(), handlersForLanguage);
+				}
+				
+				handlersForLanguage.add(scriptInvocationHandler);
 			}
+		}
+		catch(ServiceConfigurationError error) {
 			
-			handlersForLanguage.add(scriptInvocationHandler);
+			Logger logger = LoggerFactory.getLogger(ScriptableTable.class);
+			logger.error("Loading of standard script invocation handlers failed, most likely due to an unknown handler implementation given in META-INF/services" + ScriptInvocationHandler.class.getName());
+			standardHandlers = Collections.emptyMap();
 		}
 	}
 
