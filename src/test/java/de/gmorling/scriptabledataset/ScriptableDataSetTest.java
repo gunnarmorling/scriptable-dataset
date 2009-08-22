@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.gmorling.scriptabledataset.handlers.JRubyImportAddingInvocationHandler;
 import de.gmorling.scriptabledataset.handlers.ScriptInvocationHandler;
 
 /**

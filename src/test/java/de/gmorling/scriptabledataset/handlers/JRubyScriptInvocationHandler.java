@@ -5,6 +5,8 @@ import javax.script.ScriptEngine;
 
 import org.jruby.RubyObject;
 
+import de.gmorling.scriptabledataset.handlers.ScriptInvocationHandler;
+
 /**
  * A <code>ScriptInvocationHandler</code> for JRuby scripts. It adds some
  * commonly used imports to the begin of each script and converts Objects
@@ -22,7 +24,6 @@ public class JRubyScriptInvocationHandler implements ScriptInvocationHandler {
 	}
 	
 	public String preInvoke(String script) {
-
 		return "require 'date';" + script;
 	}
 
@@ -37,6 +38,9 @@ public class JRubyScriptInvocationHandler implements ScriptInvocationHandler {
 
 				try {
 					object = i.invokeMethod(object, "strftime", "%Y-%m-%d");
+//					object = i.invokeMethod(object, "to_i");
+//					object = new Date(Long.parseLong(object.toString()));
+
 				}
 				catch (Exception e) {
 					throw new RuntimeException(e);

@@ -1,4 +1,4 @@
-package de.gmorling.scriptabledataset;
+package de.gmorling.scriptabledataset.handlers;
 
 import javax.script.ScriptEngine;
 
