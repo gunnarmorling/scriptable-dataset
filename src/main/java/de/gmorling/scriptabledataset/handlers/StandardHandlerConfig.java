@@ -12,8 +12,6 @@ import java.util.ServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.gmorling.scriptabledataset.ScriptableTable;
-
 /**
  * Manages handlers, that shall always executed for scripts in a given language.
  * These standard handlers will be called <b>before</b> any custom handlers in
@@ -50,7 +48,7 @@ public class StandardHandlerConfig {
 		}
 		catch(ServiceConfigurationError error) {
 			
-			Logger logger = LoggerFactory.getLogger(ScriptableTable.class);
+			Logger logger = LoggerFactory.getLogger(StandardHandlerConfig.class);
 			logger.error("Loading of standard script invocation handlers failed, most likely due to an unknown handler implementation given in META-INF/services" + ScriptInvocationHandler.class.getName());
 			standardHandlers = Collections.emptyMap();
 		}
@@ -59,7 +57,7 @@ public class StandardHandlerConfig {
 	public static List<ScriptInvocationHandler> getStandardHandlersByLanguage(String language) {
 		
 		if (standardHandlers.containsKey(language)) {
-			return new ArrayList<ScriptInvocationHandler>(standardHandlers.get(language));
+			return Collections.unmodifiableList(standardHandlers.get(language));
 		}
 		else {
 			return Collections.emptyList();
